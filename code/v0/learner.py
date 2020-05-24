@@ -128,7 +128,7 @@ class Learner(object):
             print("Must Train before save !")
             return
 
-        print(f"model will be saved here: {self.config.model_path}")
+        # print(f"model will be saved here: {self.config.model_path}")
 
         torch.save({
             "logger": self.logger,
