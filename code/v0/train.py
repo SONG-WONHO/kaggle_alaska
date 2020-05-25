@@ -59,6 +59,8 @@ def main():
                         help="log path")
     parser.add_argument('--model-path', default=CFG.model_path,
                         help="model path")
+    parser.add_argument('--pretrained-path',
+                        help='pretrained path')
 
     # image
     parser.add_argument('--transform_version', default=0, type=int,
@@ -84,12 +86,14 @@ def main():
     parser.add_argument("--seed", default=CFG.seed, type=int,
                         help=f"seed({CFG.seed})")
 
+
     args = parser.parse_args()
 
     # path
     CFG.root_path = args.root_path
     CFG.log_path = args.log_path
     CFG.model_path = args.model_path
+    CFG.pretrained_path = args.pretrained_path
 
     # image
     CFG.transform_version = args.transform_version
@@ -150,12 +154,25 @@ def main():
 
 
     ### Model related logic
+    # get learner
+    learner = Learner(CFG)
+    if CFG.pretrained_path:
+        print("Load Pretrained Model")
+        print(f"... Pretrained Info - {CFG.pretrained_path}")
+        learner.load(CFG.pretrained_path, f"model_state_dict")
+
     # get model
-    print(f"Get Model")
-    model = get_model(CFG)
-    if torch.cuda.device_count() > 1:
-        model = nn.DataParallel(model)
-    model = model.to(CFG.device)
+    if CFG.pretrained_path:
+        print(f"Get Model")
+        model = learner.best_model
+        if torch.cuda.device_count() > 1:
+            model = nn.DataParallel(model)
+    else:
+        print(f"Get Model")
+        model = get_model(CFG)
+        if torch.cuda.device_count() > 1:
+            model = nn.DataParallel(model)
+        model = model.to(CFG.device)
 
     # get optimizer
     param_optimizer = list(model.named_parameters())
@@ -171,8 +188,6 @@ def main():
     scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1)
 
     ### Train related logic
-    # get learner
-    learner = Learner(CFG)
     learner.train(trn_data, val_data, model, optimizer, scheduler)
 
 
