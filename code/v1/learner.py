@@ -155,7 +155,7 @@ class Learner(object):
         train_iterator = tqdm(train_loader, leave=False)
         for X_batch, typ, y_batch, y_bin in train_iterator:
             X_batch = X_batch.to(self.config.device)
-            y_batch = y_batch.to(self.config.device)  # .type(torch.float32)
+            y_batch = y_batch.to(self.config.device)
 
             batch_size = X_batch.size(0)
 
