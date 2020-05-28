@@ -152,7 +152,6 @@ def main():
     trn_data = Alaska2Dataset(CFG, train_df, train_transforms)
     val_data = Alaska2Dataset(CFG, valid_df, test_transforms)
 
-
     ### Model related logic
     # get learner
     learner = Learner(CFG)
