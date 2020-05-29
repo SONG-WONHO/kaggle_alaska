@@ -34,12 +34,12 @@ def transform_v0(config):
 
 def transform_v1(config):
     train_transform = Compose([
-        # Compose([
-        #     PadIfNeeded(min_height=532,
-        #                 min_width=532,
-        #                 p=1.0),
-        #     RandomCrop(512, 512, p=1.0)
-        # ], p=0.5),
+        Compose([
+            PadIfNeeded(min_height=532,
+                        min_width=532,
+                        p=1.0),
+            RandomCrop(512, 512, p=1.0)
+        ], p=0.5),
         VerticalFlip(p=0.5),
         HorizontalFlip(p=0.5),
         Cutout(num_holes=4, max_h_size=4, max_w_size=4, p=0.5),
@@ -47,7 +47,6 @@ def transform_v1(config):
         Cutout(num_holes=8, max_h_size=16, max_w_size=16, p=0.5),
         Cutout(num_holes=16, max_h_size=8, max_w_size=8, p=0.5),
         Cutout(num_holes=32, max_h_size=8, max_w_size=8, p=0.5),
-        ToFloat(max_value=255),
         Normalize(
             mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225],
@@ -56,7 +55,6 @@ def transform_v1(config):
     ], p=1)
 
     test_transform = Compose([
-        ToFloat(max_value=255),
         Normalize(
             mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225],
