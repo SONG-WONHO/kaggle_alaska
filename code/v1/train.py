@@ -63,7 +63,7 @@ def main():
                         help='pretrained path')
 
     # image
-    parser.add_argument('--transform_version', default=0, type=int,
+    parser.add_argument('--transform-version', default=0, type=int,
                         help="image transform version ex) 0, 1, 2 ...")
 
     # learning
