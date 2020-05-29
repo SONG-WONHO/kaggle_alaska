@@ -186,7 +186,7 @@ def transform_v5(config):
     train_transform = Compose([
         VerticalFlip(p=0.5),
         HorizontalFlip(p=0.5),
-        GridDropout(random_offset=True, p=1),
+        GridDropout(random_offset=True, p=0.5),
         Cutout(num_holes=4, max_h_size=4, max_w_size=4, p=0.5),
         Cutout(num_holes=8, max_h_size=8, max_w_size=8, p=0.5),
         Cutout(num_holes=8, max_h_size=16, max_w_size=16, p=0.5),
