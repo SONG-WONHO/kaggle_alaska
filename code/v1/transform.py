@@ -1,7 +1,7 @@
 from albumentations.pytorch import ToTensor
 from albumentations import (
     Compose, HorizontalFlip, VerticalFlip, Normalize, Cutout, PadIfNeeded, RandomCrop, ToFloat,
-    RandomGridShuffle, ChannelShuffle
+    RandomGridShuffle, ChannelShuffle, GridDropout
 )
 import cv2
 
@@ -154,6 +154,39 @@ def transform_v4(config):
         ChannelShuffle(p=0.5),
         VerticalFlip(p=0.5),
         HorizontalFlip(p=0.5),
+        Cutout(num_holes=4, max_h_size=4, max_w_size=4, p=0.5),
+        Cutout(num_holes=8, max_h_size=8, max_w_size=8, p=0.5),
+        Cutout(num_holes=8, max_h_size=16, max_w_size=16, p=0.5),
+        Cutout(num_holes=16, max_h_size=8, max_w_size=8, p=0.5),
+        Cutout(num_holes=32, max_h_size=8, max_w_size=8, p=0.5),
+        Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+        ToTensor()
+    ], p=1)
+
+    test_transform = Compose([
+        Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+        ToTensor()
+    ], p=1)
+
+    return train_transform, test_transform
+
+
+def transform_v5(config):
+    """ GridDropout, VFlip, Hflip, Cutout, Normalize
+
+    :param config: CFG
+    :return: (train transform, test transform)
+    """
+    train_transform = Compose([
+        VerticalFlip(p=0.5),
+        HorizontalFlip(p=0.5),
+        GridDropout(random_offset=True, p=1),
         Cutout(num_holes=4, max_h_size=4, max_w_size=4, p=0.5),
         Cutout(num_holes=8, max_h_size=8, max_w_size=8, p=0.5),
         Cutout(num_holes=8, max_h_size=16, max_w_size=16, p=0.5),
