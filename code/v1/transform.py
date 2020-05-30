@@ -1,7 +1,7 @@
 from albumentations.pytorch import ToTensor
 from albumentations import (
     Compose, HorizontalFlip, VerticalFlip, Normalize, Cutout, PadIfNeeded, RandomCrop, ToFloat,
-    RandomGridShuffle, ChannelShuffle, GridDropout
+    RandomGridShuffle, ChannelShuffle, GridDropout, OneOf
 )
 import cv2
 
