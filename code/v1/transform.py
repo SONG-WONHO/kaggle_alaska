@@ -211,6 +211,48 @@ def transform_v5(config):
 
 
 def transform_v6(config):
+    """ GridDropout * n, VFlip, Hflip, Cutout, Normalize
+
+    :param config: CFG
+    :return: (train transform, test transform)
+    """
+
+    grid_dropout = OneOf([
+        GridDropout(holes_number_x=4, holes_number_y=4, random_offset=True),
+        GridDropout(holes_number_x=6, holes_number_y=6, random_offset=True),
+        GridDropout(holes_number_x=8, holes_number_y=8, random_offset=True),
+        GridDropout(holes_number_x=10, holes_number_y=10, random_offset=True),
+        GridDropout(random_offset=True),
+    ])
+
+    train_transform = Compose([
+        VerticalFlip(p=0.5),
+        HorizontalFlip(p=0.5),
+        grid_dropout,
+        Cutout(num_holes=4, max_h_size=4, max_w_size=4, p=0.5),
+        Cutout(num_holes=8, max_h_size=8, max_w_size=8, p=0.5),
+        Cutout(num_holes=8, max_h_size=16, max_w_size=16, p=0.5),
+        Cutout(num_holes=16, max_h_size=8, max_w_size=8, p=0.5),
+        Cutout(num_holes=32, max_h_size=8, max_w_size=8, p=0.5),
+        Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+        ToTensor()
+    ], p=1)
+
+    test_transform = Compose([
+        Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+        ToTensor()
+    ], p=1)
+
+    return train_transform, test_transform
+
+
+def transform_v7(config):
     """ GridShuffle, GridDropout, VFlip, Hflip, Cutout, Normalize
 
     :param config: CFG
