@@ -253,7 +253,7 @@ def transform_v6(config):
 
 
 def transform_v7(config):
-    """ GridShuffle, GridDropout, VFlip, Hflip, Cutout, Normalize
+    """ GridShuffle * n, GridDropout * n, VFlip, Hflip, Cutout, Normalize
 
     :param config: CFG
     :return: (train transform, test transform)
