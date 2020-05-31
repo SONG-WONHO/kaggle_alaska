@@ -59,7 +59,7 @@ class LabelSmoothingCrossEntropy(nn.Module):
 
 # loss function
 def loss_func(pred, target):
-    weighted_label = 0
+    weighted_label = 1
     weight = (target == weighted_label).type(torch.float32) * 0.5 + 1
     return (nn.CrossEntropyLoss(reduction='none')(pred, target) * weight).mean()
 
