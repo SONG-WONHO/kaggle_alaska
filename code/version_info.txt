@@ -1,3 +1,4 @@
 v0: YH Base
 v1: Transforms
 v2: LabelSmoothing
+v3: Weighted Loss
