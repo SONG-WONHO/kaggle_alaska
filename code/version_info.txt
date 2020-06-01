@@ -1,4 +1,4 @@
-v0: YH Base
+v0: FMix, LabelSmoothing, Different Model
 v1: Transforms
 v2: LabelSmoothing
 v3: Weighted Loss
