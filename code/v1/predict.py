@@ -106,7 +106,7 @@ def main():
     test_preds = learner.predict(tst_data)
 
     # multi classification
-    test_preds_multi = nn.Softmax()(torch.tensor(test_preds[:, :-1]))[:, 1:].sum(-1).numpy()
+    test_preds_multi = nn.Softmax()(torch.tensor(test_preds))[:, 1:].sum(-1).numpy()
 
     ss_df['Label'] = test_preds_multi
     ss_df.to_csv(os.path.join(CFG.save_path, CFG.sub_name), index=False)
