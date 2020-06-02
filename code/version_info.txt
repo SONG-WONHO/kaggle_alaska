@@ -3,3 +3,4 @@ v1: Transforms
 v2: LabelSmoothing
 v3: Weighted Loss
 v4: Edit Model architecture
+v5: Delete Batch Norm in Models
