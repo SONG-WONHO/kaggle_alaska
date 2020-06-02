@@ -17,6 +17,8 @@ from model import get_model
 from learner import Learner
 from utils import *
 
+from apex import amp, optimizers
+
 warnings.filterwarnings("ignore")
 
 
@@ -182,6 +184,10 @@ def main():
         {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)],
          'weight_decay': 0.0}]
     optimizer = optim.AdamW(optimizer_grouped_parameters, CFG.learning_rate)
+
+    model, optimizer = amp.initialize(
+        model, optimizer, verbosity=0
+    )
 
     # get scheduler
     scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1)

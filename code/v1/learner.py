@@ -165,7 +165,9 @@ class Learner(object):
             losses.update(loss.item(), batch_size)
 
             optimizer.zero_grad()
-            loss.backward()
+            with amp.scale_loss(loss, optimizer) as scaled_loss:
+                scaled_loss.backward()
+            # loss.backward()
             optimizer.step()
             scheduler.step()
 
