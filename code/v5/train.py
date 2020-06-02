@@ -180,7 +180,7 @@ def main():
         net[1] = modules
         net = nn.Sequential(*net[:3])
         model.model = net
-        
+
         if torch.cuda.device_count() > 1:
             model = nn.DataParallel(model)
         model = model.to(CFG.device)
