@@ -10,13 +10,16 @@ class BaseModel(nn.Module):
         self.config = config
         self.header = nn.Sequential(
             nn.Conv2d(3, 3, (1, 1)),
-            nn.LeakyReLU(),
+            nn.BatchNorm2d(3),
+            nn.Conv2d(3, 3, (3, 3), padding=1),
+            nn.BatchNorm2d(3),
             nn.Conv2d(3, 3, (1, 1)),
-            nn.LeakyReLU(),
-            nn.Conv2d(3, 3, (1, 1))
+            nn.BatchNorm2d(3)
         )
 
         self.model = EfficientNet.from_pretrained('efficientnet-b0')
+
+        print(self.model)
 
         def get_reg_layer():
             return nn.Sequential(
@@ -27,6 +30,7 @@ class BaseModel(nn.Module):
 
     def forward(self, x):
         x = self.header(x)
+        print(x.shape)
         feat = self.model.extract_features(x)
         feat = F.avg_pool2d(feat, feat.size()[2:]).reshape(-1, 1280)
         outputs = self.dense_out(feat)
