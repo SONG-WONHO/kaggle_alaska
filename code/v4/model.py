@@ -19,8 +19,6 @@ class BaseModel(nn.Module):
 
         self.model = EfficientNet.from_pretrained('efficientnet-b0')
 
-        print(self.model)
-
         def get_reg_layer():
             return nn.Sequential(
                 nn.Linear(1280, config.num_targets),
@@ -30,7 +28,6 @@ class BaseModel(nn.Module):
 
     def forward(self, x):
         x = self.header(x)
-        print(x.shape)
         feat = self.model.extract_features(x)
         feat = F.avg_pool2d(feat, feat.size()[2:]).reshape(-1, 1280)
         outputs = self.dense_out(feat)
