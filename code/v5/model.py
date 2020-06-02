@@ -28,7 +28,6 @@ class BaseModel(nn.Module):
         self.dense_out = get_reg_layer()
 
     def forward(self, x):
-        print(x.shape)
         feat = self.model(x)
         feat = F.avg_pool2d(feat, feat.size()[2:]).reshape(-1, 1280)
         outputs = self.dense_out(feat)
