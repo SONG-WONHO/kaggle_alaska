@@ -173,6 +173,17 @@ def main():
             model = nn.DataParallel(model)
         model = model.to(CFG.device)
 
+        net = [m for m in list(model.model.children()) if not isinstance(m, nn.BatchNorm2d)]
+        modules = []
+
+        for block in list(net[1].children()):
+            modules.append(nn.Sequential(*[m for m in list(block.children()) if not isinstance(m, nn.BatchNorm2d)]))
+
+        modules = nn.Sequential(*modules)
+        net[1] = modules
+        net = nn.Sequential(*net[:3])
+        model.model = net
+
     # get optimizer
     param_optimizer = list(model.named_parameters())
     no_decay = ['bias', 'BatchNorm.bias', 'BatchNorm.weight', 'LayerNorm.bias', 'LayerNorm.weight']
