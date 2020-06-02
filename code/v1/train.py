@@ -166,13 +166,10 @@ def main():
     if CFG.pretrained_path:
         print(f"Get Model")
         model = learner.best_model
-        if torch.cuda.device_count() > 1:
-            model = nn.DataParallel(model)
+
     else:
         print(f"Get Model")
         model = get_model(CFG)
-        if torch.cuda.device_count() > 1:
-            model = nn.DataParallel(model)
         model = model.to(CFG.device)
 
     # get optimizer
@@ -188,6 +185,9 @@ def main():
     model, optimizer = amp.initialize(
         model, optimizer, verbosity=0
     )
+
+    if torch.cuda.device_count() > 1:
+        model = nn.DataParallel(model)
 
     # get scheduler
     scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1)
