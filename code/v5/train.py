@@ -169,9 +169,6 @@ def main():
     else:
         print(f"Get Model")
         model = get_model(CFG)
-        if torch.cuda.device_count() > 1:
-            model = nn.DataParallel(model)
-        model = model.to(CFG.device)
 
         net = [m for m in list(model.model.children()) if not isinstance(m, nn.BatchNorm2d)]
         modules = []
@@ -183,6 +180,10 @@ def main():
         net[1] = modules
         net = nn.Sequential(*net[:3])
         model.model = net
+        
+        if torch.cuda.device_count() > 1:
+            model = nn.DataParallel(model)
+        model = model.to(CFG.device)
 
     # get optimizer
     param_optimizer = list(model.named_parameters())
