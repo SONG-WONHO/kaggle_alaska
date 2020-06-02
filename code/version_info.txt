@@ -1,6 +1,6 @@
 v0: FMix, LabelSmoothing, Different Model
 v1: Transforms
-v2: LabelSmoothing
-v3: Weighted Loss
+v2: LabelSmoothing - Bad
+v3: Weighted Loss - Bad
 v4: Edit Model architecture
-v5: Delete Batch Norm in Models
+v5: Delete Batch Norm from Models - Very Bad
