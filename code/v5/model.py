@@ -9,19 +9,13 @@ class BaseModel(nn.Module):
         super().__init__()
         self.config = config
 
-        model = EfficientNet.from_pretrained('efficientnet-b0')
-        model = [m for m in list(model.children()) if not isinstance(m, nn.BatchNorm2d)]
-        modules = []
-        for block in list(model[1].children()):
-            modules.append(
-                nn.Sequential(*[m for m in list(block.children()) if not isinstance(m, nn.BatchNorm2d)]))
-        modules = nn.Sequential(*modules)
-        model[1] = modules
-        model = nn.Sequential(*model[:3])
-        self.model = model
+        self.model = EfficientNet.from_pretrained('efficientnet-b0')
 
         def get_reg_layer():
             return nn.Sequential(
+                nn.Linear(1280, 1280),
+                nn.LayerNorm(1280),
+                nn.LeakyReLU(),
                 nn.Linear(1280, config.num_targets),
             )
 
