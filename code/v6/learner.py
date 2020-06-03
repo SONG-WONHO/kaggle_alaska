@@ -196,7 +196,7 @@ class Learner(object):
             X_batch = X_batch.to(self.config.device)
             y_batch = y_batch.to(self.config.device)  # .type(torch.float32)
 
-            batch_size = X_batch[0].size(0)
+            batch_size = X_batch.size(0)
 
             with torch.no_grad():
                 preds = model(X_batch)
