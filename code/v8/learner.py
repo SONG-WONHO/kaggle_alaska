@@ -76,7 +76,7 @@ class Learner(object):
 
             # logging
             logger.loc[epoch] = [tr_loss, tr_loss_bin, vl_loss, vl_loss_bin] + vl_metric
-            logger.to_csv(os.path.join(self.config.log_path, 'log.csv'))
+            logger.round(4).to_csv(os.path.join(self.config.log_path, 'log.csv'))
 
             # save model
             if best_metric < logger.loc[epoch, 'val_metric']:
