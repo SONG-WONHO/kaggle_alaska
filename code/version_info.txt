@@ -4,3 +4,4 @@ v2: LabelSmoothing - Bad
 v3: Weighted Loss - Bad
 v4: Edit Model architecture
 v5: Delete Batch Norm from Models - Very Bad
+v6: Scheduler
