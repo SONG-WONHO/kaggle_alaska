@@ -1,7 +1,9 @@
 v0: FMix, LabelSmoothing, Different Model
-v1: Transforms
+v1: Transforms - Baseline
 v2: LabelSmoothing - Bad
 v3: Weighted Loss - Bad
 v4: Edit Model architecture
 v5: Delete Batch Norm from Models - Very Bad
 v6: Scheduler
+v7: Pretrain Model
+v8: Low Level Features
