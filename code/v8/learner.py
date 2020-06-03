@@ -202,8 +202,8 @@ class Learner(object):
                 loss = loss_func(preds, y_batch.view(-1))
                 losses.update(loss.item(), batch_size)
 
-            preds = preds.reshape(batch_size, 17, -1)
-            y_batch = y_batch.reshape(batch_size, 17)
+            preds = preds.reshape(17, batch_size, -1).transpose(0, 1)
+            y_batch = y_batch.reshape(17, batch_size).transpose(0, 1)
 
             true_final.append(y_batch.cpu())
             pred_final.append(preds.detach().cpu())
@@ -226,7 +226,8 @@ class Learner(object):
         return losses.avg, 0, vl_score
 
     def _create_logger(self):
-        log_cols = ['tr_loss', 'tr_loss_bin', 'val_loss', 'val_loss_bin'] + [f"val_metric_{i}" for i in range(17)]
+        log_cols = ['tr_loss', 'tr_loss_bin', 'val_loss', 'val_loss_bin'] \
+                   + [f"val_metric_{i}" for i in range(16)] + ["val_metric"]
         return pd.DataFrame(index=range(self.config.num_epochs), columns=log_cols)
 
     def _cal_metrics(self, pred, true):
