@@ -27,7 +27,7 @@ class BaseModel(nn.Module):
             1280
         ]
 
-        self.dense_out = [get_reg_layer(c) for i, c in enumerate(self.c_list)]
+        self.dense_out = [get_reg_layer(c).to(config.device) for i, c in enumerate(self.c_list)]
 
     def forward(self, x):
         batch_size = x.size(0)
