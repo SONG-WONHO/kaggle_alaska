@@ -8,28 +8,25 @@ class BaseModel(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.config = config
-        self.header = nn.Sequential(
-            nn.Conv2d(3, 3, (1, 1)),
-            nn.BatchNorm2d(3),
-            nn.Conv2d(3, 3, (3, 3), padding=1),
-            nn.BatchNorm2d(3),
-            nn.Conv2d(3, 3, (1, 1)),
-            nn.BatchNorm2d(3)
-        )
 
         self.model = EfficientNet.from_pretrained('efficientnet-b0')
 
         def get_reg_layer():
             return nn.Sequential(
-                nn.Linear(1280, config.num_targets),
+                nn.Linear(1280*2, 1280*2),
+                nn.LayerNorm(1280*2),
+                nn.Linear(1280*2, config.num_targets),
             )
 
         self.dense_out = get_reg_layer()
 
     def forward(self, x):
-        x = self.header(x)
         feat = self.model.extract_features(x)
-        feat = F.avg_pool2d(feat, feat.size()[2:]).reshape(-1, 1280)
+        feat_avg = F.avg_pool2d(feat, feat.size()[2:]).reshape(-1, 1280)
+        feat_max = F.max_pool2d(feat, feat.size()[2:]).reshape(-1, 1280)
+
+        feat = torch.cat([feat_avg, feat_max], dim=-1)
+
         outputs = self.dense_out(feat)
         return outputs
 
