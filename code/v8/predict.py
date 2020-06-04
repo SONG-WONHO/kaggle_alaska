@@ -106,19 +106,14 @@ def main():
 
     test_preds = learner.predict(tst_data)
 
-    print(test_preds.shape)
-
-    import numpy as np
-
-    np.save("./temp.npy", test_preds)
-
     # multi classification
-    '''
-    test_preds_multi = nn.Softmax()(torch.tensor(test_preds))[:, 1:].sum(-1).numpy()
+    pred_final_sum = nn.Softmax(dim=-1)(torch.tensor(test_preds))
+    pred_final_sum = pred_final_sum[:, :, 1:].sum(dim=-1).numpy()
 
-    ss_df['Label'] = test_preds_multi
+    pred_final_sum = pred_final_sum[:, -9:].sum(axis=-1)
+
+    ss_df['Label'] = pred_final_sum
     ss_df.to_csv(os.path.join(CFG.save_path, CFG.sub_name), index=False)
-    '''
 
 
 if __name__ == '__main__':
