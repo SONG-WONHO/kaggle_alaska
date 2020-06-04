@@ -112,6 +112,7 @@ class Learner(object):
                 preds = model(X_batch)
 
             preds = preds.cpu().detach()
+            preds = preds.reshape(17, batch_size, -1).transpose(0, 1)
 
             pred_final.append(preds)
 
