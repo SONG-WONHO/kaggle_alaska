@@ -165,7 +165,7 @@ class Learner(object):
 
             X_pred = model(X_cover)
 
-            loss = loss_func(X_pred, X_stego)
+            loss = loss_func(X_pred, X_stego - X_cover)
             losses.update(loss.item(), batch_size)
 
             optimizer.zero_grad()
