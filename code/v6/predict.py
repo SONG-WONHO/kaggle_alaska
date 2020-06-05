@@ -66,7 +66,6 @@ def main():
     CFG.log_path = f"./log/v{args.version}/exp_{args.exp_id}/"
 
     CFG.typ = args.typ
-    CFG.batch_size = 40
     CFG.use_apex = False
 
     # get device
@@ -75,6 +74,8 @@ def main():
     # load train environment
     env = json.load(open(os.path.join(CFG.log_path, 'CFG.json'), 'r'))
     for k, v in env.items(): setattr(CFG, k, v)
+
+    CFG.batch_size = 40
 
     score = pd.read_csv(os.path.join(CFG.log_path, "log.csv")).sort_values(f'val_{CFG.typ}', ascending=False).iloc[0]
     CFG.sub_name = f"submission.ver_{args.version}.exp_{args.exp_id}.loss_{score['val_loss']:.4f}.metric_{score['val_metric']:.4f}.csv"
