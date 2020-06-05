@@ -66,7 +66,7 @@ def main():
     CFG.log_path = f"./log/v{args.version}/exp_{args.exp_id}/"
 
     CFG.typ = args.typ
-    
+    CFG.batch_size = 40
     CFG.use_apex = False
 
     # get device
