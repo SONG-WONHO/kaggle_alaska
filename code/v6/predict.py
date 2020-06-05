@@ -44,6 +44,7 @@ def main():
                         help=f"number of workers({CFG.workers})")
     parser.add_argument("--seed", default=CFG.seed, type=int,
                         help=f"seed({CFG.seed})")
+    parser.add_argument('--tta', action='store_true', default=False)
 
     # version
     parser.add_argument('--version', type=int)
@@ -61,6 +62,7 @@ def main():
     CFG.batch_size = args.batch_size
     CFG.workers = args.workers
     CFG.seed = args.seed
+    CFG.tta = args.tta
 
     CFG.model_path = f"./model/v{args.version}/exp_{args.exp_id}/"
     CFG.log_path = f"./log/v{args.version}/exp_{args.exp_id}/"
@@ -90,29 +92,72 @@ def main():
     print("Load Raw Data")
     _, _, test_df = load_data(CFG, CFG.train_sample_size, CFG.valid_sample_size)
 
-    # get transform
-    print("Get Transform")
-    _, test_transforms = get_transform(CFG)
+    if not CFG.tta:
+        # get transform
+        print("Get Transform")
+        _, test_transforms = get_transform(CFG)
 
-    # dataset
-    print("Get Dataset")
-    tst_data = Alaska2Dataset(CFG, test_df, test_transforms)
+        # dataset
+        print("Get Dataset")
+        tst_data = Alaska2Dataset(CFG, test_df, test_transforms)
 
-    ### learner
-    model_name = 'model.best.pt'
-    learner = Learner(CFG)
-    learner.load(os.path.join(CFG.model_path, model_name), f"model_state_dict")
+        ### learner
+        model_name = 'model.best.pt'
+        learner = Learner(CFG)
+        learner.load(os.path.join(CFG.model_path, model_name), f"model_state_dict")
 
-    ### predicton
-    ss_df = pd.read_csv(os.path.join(CFG.root_path, "sample_submission.csv"))
+        ### predicton
+        ss_df = pd.read_csv(os.path.join(CFG.root_path, "sample_submission.csv"))
 
-    test_preds = learner.predict(tst_data)
+        test_preds = learner.predict(tst_data)
 
-    # multi classification
-    test_preds_multi = nn.Softmax()(torch.tensor(test_preds))[:, 1:].sum(-1).numpy()
+        # multi classification
+        test_preds_multi = nn.Softmax()(torch.tensor(test_preds))[:, 1:].sum(-1).numpy()
 
-    ss_df['Label'] = test_preds_multi
-    ss_df.to_csv(os.path.join(CFG.save_path, CFG.sub_name), index=False)
+        ss_df['Label'] = test_preds_multi
+        ss_df.to_csv(os.path.join(CFG.save_path, CFG.sub_name), index=False)
+
+    else:
+        # get transform
+        print("Get Transform")
+        import torch
+        from albumentations.pytorch import ToTensor
+        from albumentations import (
+            Compose, HorizontalFlip, VerticalFlip, Normalize, Cutout, PadIfNeeded, RandomCrop, ToFloat,
+            RandomGridShuffle, ChannelShuffle, GridDropout, OneOf
+        )
+
+        test_transforms = Compose([
+            VerticalFlip(p=0.5),
+            HorizontalFlip(p=0.5),
+            Normalize(
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225],
+            ),
+            ToTensor()
+        ], p=1)
+
+        # dataset
+        print("Get Dataset")
+        tst_data = Alaska2Dataset(CFG, test_df, test_transforms)
+
+        ### learner
+        model_name = 'model.best.pt'
+        learner = Learner(CFG)
+        learner.load(os.path.join(CFG.model_path, model_name), f"model_state_dict")
+
+        ### predicton
+        ss_df = pd.read_csv(os.path.join(CFG.root_path, "sample_submission.csv"))
+
+        test_preds_fin = []
+        for _ in range(4):
+            test_preds = learner.predict(tst_data)
+            test_preds = nn.Softmax()(torch.tensor(test_preds))[:, 1:].sum(-1)
+            test_preds_fin.append(test_preds)
+
+        test_preds_fin = torch.cat(test_preds_fin, dim=0).mean(-1)
+        ss_df['Label'] = test_preds_fin
+        ss_df.to_csv(os.path.join(CFG.save_path, CFG.sub_name), index=False)
 
 
 if __name__ == '__main__':
