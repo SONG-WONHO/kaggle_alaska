@@ -155,7 +155,8 @@ def main():
             test_preds = nn.Softmax()(torch.tensor(test_preds))[:, 1:].sum(-1)
             test_preds_fin.append(test_preds)
 
-        test_preds_fin = torch.cat(test_preds_fin, dim=0).mean(-1)
+        test_preds_fin = torch.cat(test_preds_fin, dim=0).mean(-1).numpy()
+        print(f"test preds shape: {test_preds_fin.shape}")
         ss_df['Label'] = test_preds_fin
         ss_df.to_csv(os.path.join(CFG.save_path, f"tta.{CFG.sub_name}"), index=False)
 
