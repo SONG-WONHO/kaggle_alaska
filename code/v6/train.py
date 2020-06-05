@@ -197,7 +197,7 @@ def main():
     # get scheduler
     # scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode='min', factor=0.5, patience=1, verbose=False,
+        optimizer, mode='min', factor=0.5, patience=3, verbose=False,
         threshold=0.0001, threshold_mode='abs', cooldown=0, min_lr=1e-8, eps=1e-08)
 
     ### Train related logic
