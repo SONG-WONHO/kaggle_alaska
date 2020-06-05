@@ -157,7 +157,7 @@ def main():
 
         test_preds_fin = torch.cat(test_preds_fin, dim=0).mean(-1)
         ss_df['Label'] = test_preds_fin
-        ss_df.to_csv(os.path.join(CFG.save_path, CFG.sub_name), index=False)
+        ss_df.to_csv(os.path.join(CFG.save_path, f"tta.{CFG.sub_name}"), index=False)
 
 
 if __name__ == '__main__':
