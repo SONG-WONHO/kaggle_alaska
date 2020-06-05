@@ -14,8 +14,14 @@ import torch.optim as optim
 from data import *
 from transform import get_transform
 from model import get_model
-from learner import Learner
+from learner import Learner, LearnerPre
 from utils import *
+
+from albumentations.pytorch import ToTensor
+from albumentations import (
+    Compose, HorizontalFlip, VerticalFlip, Normalize, Cutout, PadIfNeeded, RandomCrop, ToFloat,
+    RandomGridShuffle, ChannelShuffle, GridDropout, OneOf
+)
 
 USE_APEX = False
 if USE_APEX:
@@ -34,7 +40,7 @@ class CFG:
     image_size = 512
 
     # model
-    model_name = "RCAN"
+    model_name = "BaseModel"
 
     # train
     batch_size = 8
@@ -81,6 +87,7 @@ def main():
                         help=f"train sample size ({CFG.train_sample_size})")
     parser.add_argument('--valid-sample-size', default=CFG.valid_sample_size, type=int,
                         help=f"valid sample size ({CFG.valid_sample_size})")
+    parser.add_argument('--pretrain', action='store_true', default=False)
 
     # model
 
@@ -107,6 +114,7 @@ def main():
     CFG.num_epochs = args.num_epochs
     CFG.train_sample_size = args.train_sample_size
     CFG.valid_sample_size = args.valid_sample_size
+    CFG.pretrain = args.pretrain
 
     # model
 
@@ -143,63 +151,131 @@ def main():
     ### seed all
     seed_everything(CFG.seed)
 
-    ### Data related logic
-    # load data
-    print("Load Raw Data")
-    train_df, valid_df = load_data(CFG, CFG.train_sample_size, CFG.valid_sample_size)
+    if CFG.pretrain:
+        print("[PRETRAIN MODE]")
+        ### Data related logic
+        # load data
+        print("Load Raw Data")
+        train_df, valid_df = load_data_pre(CFG, CFG.train_sample_size, CFG.valid_sample_size)
 
-    # get transform
-    print("Get Transform")
-    transforms = get_transform(CFG)
+        # get transform
+        print("Get Transform")
+        transforms = Compose([
+            Normalize(
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225],
+            ),
+            ToTensor()
+        ], p=1)
 
-    # dataset
-    print("Get Dataset")
-    trn_data = Alaska2Dataset(CFG, train_df, transforms)
-    val_data = Alaska2Dataset(CFG, valid_df, transforms)
+        # dataset
+        print("Get Dataset")
+        trn_data = Alaska2DatasetPre(CFG, train_df, transforms)
+        val_data = Alaska2DatasetPre(CFG, valid_df, transforms)
 
-    ### Model related logic
-    # get learner
-    learner = Learner(CFG)
-    if CFG.pretrained_path:
-        print("Load Pretrained Model")
-        print(f"... Pretrained Info - {CFG.pretrained_path}")
-        learner.load(CFG.pretrained_path, f"model_state_dict")
+        ### Model related logic
+        # get learner
+        learner = LearnerPre(CFG)
+        if CFG.pretrained_path:
+            print("Load Pretrained Model")
+            print(f"... Pretrained Info - {CFG.pretrained_path}")
+            learner.load(CFG.pretrained_path, f"model_state_dict")
 
-    # get model
-    if CFG.pretrained_path:
-        print(f"Get Model")
-        model = learner.best_model
+        # get model
+        if CFG.pretrained_path:
+            print(f"Get Model")
+            model = learner.best_model
+
+        else:
+            print(f"Get Model")
+            model = get_model(CFG)
+            model = model.to(CFG.device)
+
+        print(f'... Num parameters: {count_parameters(model)}')
+
+        # get optimizer
+        param_optimizer = list(model.named_parameters())
+        no_decay = ['bias', 'BatchNorm.bias', 'BatchNorm.weight', 'LayerNorm.bias', 'LayerNorm.weight']
+        optimizer_grouped_parameters = [
+            {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],
+             'weight_decay': 0.001},
+            {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)],
+             'weight_decay': 0.0}]
+        optimizer = optim.AdamW(optimizer_grouped_parameters, CFG.learning_rate)
+
+        if CFG.use_apex:
+            model, optimizer = amp.initialize(
+                model, optimizer, verbosity=0
+            )
+
+        if torch.cuda.device_count() > 1:
+            model = nn.DataParallel(model)
+
+        # get scheduler
+        scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1)
+
+        ### Train related logic
+        learner.train(trn_data, val_data, model, optimizer, scheduler)
 
     else:
-        print(f"Get Model")
-        model = get_model(CFG)
-        model = model.to(CFG.device)
+        print("[FINETUNE MODE]")
+        ### Data related logic
+        # load data
+        print("Load Raw Data")
+        train_df, valid_df, test_df = load_data(CFG, CFG.train_sample_size, CFG.valid_sample_size)
 
-    print(f'... Num parameters: {count_parameters(model)}')
+        # get transform
+        print("Get Transform")
+        train_transforms, test_transforms = get_transform(CFG)
 
-    # get optimizer
-    param_optimizer = list(model.named_parameters())
-    no_decay = ['bias', 'BatchNorm.bias', 'BatchNorm.weight', 'LayerNorm.bias', 'LayerNorm.weight']
-    optimizer_grouped_parameters = [
-        {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],
-         'weight_decay': 0.001},
-        {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)],
-         'weight_decay': 0.0}]
-    optimizer = optim.AdamW(optimizer_grouped_parameters, CFG.learning_rate)
+        # dataset
+        print("Get Dataset")
+        trn_data = Alaska2Dataset(CFG, train_df, train_transforms)
+        val_data = Alaska2Dataset(CFG, valid_df, test_transforms)
 
-    if CFG.use_apex:
-        model, optimizer = amp.initialize(
-            model, optimizer, verbosity=0
-        )
+        ### Model related logic
+        # get learner
+        learner = Learner(CFG)
+        if CFG.pretrained_path:
+            print("Load Pretrained Model")
+            print(f"... Pretrained Info - {CFG.pretrained_path}")
+            learner.load(CFG.pretrained_path, f"model_state_dict")
 
-    if torch.cuda.device_count() > 1:
-        model = nn.DataParallel(model)
+        # get model
+        if CFG.pretrained_path:
+            print(f"Get Model")
+            model = learner.best_model
 
-    # get scheduler
-    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1)
+        else:
+            print(f"Get Model")
+            model = get_model(CFG)
+            model = model.to(CFG.device)
 
-    ### Train related logic
-    learner.train(trn_data, val_data, model, optimizer, scheduler)
+        print(f'... Num parameters: {count_parameters(model)}')
+
+        # get optimizer
+        param_optimizer = list(model.named_parameters())
+        no_decay = ['bias', 'BatchNorm.bias', 'BatchNorm.weight', 'LayerNorm.bias', 'LayerNorm.weight']
+        optimizer_grouped_parameters = [
+            {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],
+             'weight_decay': 0.001},
+            {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)],
+             'weight_decay': 0.0}]
+        optimizer = optim.AdamW(optimizer_grouped_parameters, CFG.learning_rate)
+
+        if CFG.use_apex:
+            model, optimizer = amp.initialize(
+                model, optimizer, verbosity=0
+            )
+
+        if torch.cuda.device_count() > 1:
+            model = nn.DataParallel(model)
+
+        # get scheduler
+        scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1)
+
+        ### Train related logic
+        learner.train(trn_data, val_data, model, optimizer, scheduler)
 
 
 if __name__ == "__main__":
