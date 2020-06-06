@@ -5,5 +5,5 @@ v3: Weighted Loss - Bad
 v4: Edit Model architecture - WIP
 v5: Delete Batch Norm from Models - Very Bad
 v6: Scheduler - Reduce on plateau *
-v7: Pretrain Model - To do
+v7: Pretrain Model - Bad
 v8: Low Level Features - Good, Variety *
