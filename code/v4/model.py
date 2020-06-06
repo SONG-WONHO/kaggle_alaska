@@ -13,20 +13,15 @@ class BaseModel(nn.Module):
 
         def get_reg_layer():
             return nn.Sequential(
-                nn.Linear(1280*2, 1280*2),
-                nn.LayerNorm(1280*2),
-                nn.Linear(1280*2, config.num_targets),
+                nn.Dropout(0.15),
+                nn.Linear(1280, config.num_targets),
             )
 
         self.dense_out = get_reg_layer()
 
     def forward(self, x):
         feat = self.model.extract_features(x)
-        feat_avg = F.avg_pool2d(feat, feat.size()[2:]).reshape(-1, 1280)
-        feat_max = F.max_pool2d(feat, feat.size()[2:]).reshape(-1, 1280)
-
-        feat = torch.cat([feat_avg, feat_max], dim=-1)
-
+        feat = F.avg_pool2d(feat, feat.size()[2:]).reshape(-1, 1280)
         outputs = self.dense_out(feat)
         return outputs
 
