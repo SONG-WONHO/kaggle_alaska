@@ -198,7 +198,7 @@ class LearnerPre(object):
 
             with torch.no_grad():
                 X_pred = model(X_cover, self.config.pretrain)
-                loss = loss_func_pre(X_pred, X_stego)
+                loss = loss_func_pre(X_pred, X_stego - X_cover)
                 losses.update(loss.item(), batch_size)
 
             losses.update(loss.item(), batch_size)
