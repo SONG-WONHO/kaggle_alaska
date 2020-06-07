@@ -132,13 +132,6 @@ def main():
         test_transforms = Compose([
             VerticalFlip(p=0.5),
             HorizontalFlip(p=0.5),
-            OneOf([
-                RandomGridShuffle((2, 2)),
-                RandomGridShuffle((4, 4)),
-                RandomGridShuffle((8, 8)),
-                RandomGridShuffle((16, 16)),
-                RandomGridShuffle((32, 32)),
-            ], p=0.5),
             Normalize(
                 mean=[0.485, 0.456, 0.406],
                 std=[0.229, 0.224, 0.225],
@@ -159,7 +152,7 @@ def main():
         ss_df = pd.read_csv(os.path.join(CFG.root_path, "sample_submission.csv"))
 
         test_preds_fin = []
-        for _ in range(8):
+        for _ in range(4):
             test_preds = learner.predict(tst_data)
             test_preds = nn.Softmax()(torch.tensor(test_preds))[:, 1:].sum(-1)
             test_preds_fin.append(test_preds.unsqueeze(-1))
