@@ -131,6 +131,13 @@ def main():
         test_transforms = Compose([
             VerticalFlip(p=0.5),
             HorizontalFlip(p=0.5),
+            OneOf([
+                RandomGridShuffle((2, 2)),
+                RandomGridShuffle((4, 4)),
+                RandomGridShuffle((8, 8)),
+                RandomGridShuffle((16, 16)),
+                RandomGridShuffle((32, 32)),
+            ], p=0.5),
             Normalize(
                 mean=[0.485, 0.456, 0.406],
                 std=[0.229, 0.224, 0.225],
