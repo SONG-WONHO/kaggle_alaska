@@ -2,6 +2,7 @@ import os, sys, argparse, json
 from pprint import pprint
 import warnings
 
+import torch
 import torch.nn as nn
 
 from data import *
