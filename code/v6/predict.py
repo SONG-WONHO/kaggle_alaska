@@ -159,7 +159,7 @@ def main():
         ss_df = pd.read_csv(os.path.join(CFG.root_path, "sample_submission.csv"))
 
         test_preds_fin = []
-        for _ in range(4):
+        for _ in range(8):
             test_preds = learner.predict(tst_data)
             test_preds = nn.Softmax()(torch.tensor(test_preds))[:, 1:].sum(-1)
             test_preds_fin.append(test_preds.unsqueeze(-1))
