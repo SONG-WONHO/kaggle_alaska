@@ -2,7 +2,6 @@ import os, sys, argparse, json
 from pprint import pprint
 import warnings
 
-import torch
 import torch.nn as nn
 
 from data import *
@@ -94,6 +93,8 @@ def main():
     _, _, test_df = load_data(CFG, CFG.train_sample_size, CFG.valid_sample_size)
 
     if not CFG.tta:
+        import torch
+
         # get transform
         print("Get Transform")
         _, test_transforms = get_transform(CFG)
