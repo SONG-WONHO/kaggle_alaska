@@ -2,7 +2,7 @@ v0: FMix, LabelSmoothing, Different Model - Bad
 v1: Transforms - Baseline *
 v2: LabelSmoothing - Bad
 v3: Weighted Loss - Bad
-v4: Edit Model architecture - WIP
+v4: Edit Model architecture - To Do:GeM, WIP
 v5: Delete Batch Norm from Models - Very Bad
 v6: Scheduler - Reduce on plateau *
 v7: Pretrain Model - Bad
