@@ -17,13 +17,11 @@ class GeM(nn.Module):
 class LinearPool(nn.Module):
     def __init__(self):
         super().__init__()
-        self.linear = nn.Sequential(
-            nn.Linear(16*16, 1, bias=False),
-            nn.LeakyReLU()
-        )
+        self.p = nn.Parameter(torch.ones(1, 1280, 256), requires_grad=True)
 
     def forward(self, x):
-        return self.linear(x.reshape(-1, 1280, 16 * 16)).reshape(-1, 1280)
+        x = x.reshape(-1, 1280, 16 * 16) * self.p
+        return x.mean(dim=-1)
 
 
 class BaseModel(nn.Module):
