@@ -44,3 +44,7 @@ def get_device():
     Returns: device, "cpu" if cuda is available else "cuda"
     """
     return "cuda" if torch.cuda.is_available() else "cpu"
+
+
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)

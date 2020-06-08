@@ -173,6 +173,8 @@ def main():
             model = nn.DataParallel(model)
         model = model.to(CFG.device)
 
+    print(f'... Num parameters: {count_parameters(model)}')
+
     # get optimizer
     param_optimizer = list(model.named_parameters())
     no_decay = ['bias', 'BatchNorm.bias', 'BatchNorm.weight', 'LayerNorm.bias', 'LayerNorm.weight']

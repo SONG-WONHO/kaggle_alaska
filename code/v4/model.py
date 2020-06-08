@@ -5,7 +5,6 @@ import torch.nn.functional as F
 
 
 class GeM(nn.Module):
-
     def __init__(self, p=3, eps=1e-6):
         super(GeM, self).__init__()
         self.p = nn.Parameter(torch.ones(1)*p)
@@ -15,6 +14,18 @@ class GeM(nn.Module):
         return F.avg_pool2d(x.clamp(min=self.eps).pow(self.p), x.size()[2:]).pow(1./self.p).reshape(-1, 1280)
 
 
+class LinearPool(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.linear = nn.Sequential(
+            nn.Linear(16*16, 1, bias=False),
+            nn.LeakyReLU()
+        )
+
+    def forward(self, x):
+        return self.linear(x.reshape(-1, 1280, 16 * 16)).reshape(-1, 1280)
+
+
 class BaseModel(nn.Module):
     def __init__(self, config):
         super().__init__()
@@ -22,7 +33,8 @@ class BaseModel(nn.Module):
 
         self.model = EfficientNet.from_pretrained('efficientnet-b0')
 
-        self.pool_layer = GeM()
+        # self.pool_layer = GeM()
+        self.pool_layer = LinearPool()
 
         def get_reg_layer():
             return nn.Sequential(
