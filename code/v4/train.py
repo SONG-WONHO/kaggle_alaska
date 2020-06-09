@@ -30,7 +30,7 @@ class CFG:
     image_size = 512
 
     # model
-    model_name = "BaseModel"
+    model_name = "GridModel"
 
     # train
     batch_size = 8
