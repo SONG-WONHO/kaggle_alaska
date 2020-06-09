@@ -11,3 +11,4 @@ v6: Scheduler - Reduce on plateau *
 v7: Pretrain Model - Bad
 v8: Low Level Features - Good, Variety *
 v9: DCT Features, Based on v4 (GeM) - To Do
+v10: GridMix
