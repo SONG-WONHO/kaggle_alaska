@@ -17,7 +17,7 @@ from model import get_model
 from learner import Learner
 from utils import *
 
-USE_APEX = True
+USE_APEX = False
 if USE_APEX:
     from apex import amp, optimizers
 
