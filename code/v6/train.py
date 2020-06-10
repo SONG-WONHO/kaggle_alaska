@@ -186,6 +186,8 @@ def main():
          'weight_decay': 0.0}]
     optimizer = optim.AdamW(optimizer_grouped_parameters, CFG.learning_rate)
 
+    model = nn.SyncBatchNorm.convert_sync_batchnorm(model)
+
     if CFG.use_apex:
         model, optimizer = amp.initialize(
             model, optimizer, verbosity=0
