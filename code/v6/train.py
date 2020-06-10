@@ -186,7 +186,6 @@ def main():
          'weight_decay': 0.0}]
     optimizer = optim.AdamW(optimizer_grouped_parameters, CFG.learning_rate)
 
-    model = nn.SyncBatchNorm.convert_sync_batchnorm(model)
 
     if CFG.use_apex:
         model, optimizer = amp.initialize(
@@ -194,6 +193,7 @@ def main():
         )
 
     if torch.cuda.device_count() > 1:
+        model = nn.SyncBatchNorm.convert_sync_batchnorm(model)
         model = nn.DataParallel(model)
 
     # get scheduler
