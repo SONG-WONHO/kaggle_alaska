@@ -13,8 +13,6 @@ import torch.nn.functional as F
 from model import get_model
 from metrics import alaska_weighted_auc
 
-from apex import amp, optimizers
-
 
 # average meter
 class AverageMeter(object):
@@ -47,6 +45,10 @@ class Learner(object):
         self.best_model = None
         self.logger = None
         self.name = "model"
+
+        if config.use_apex:
+            from apex import amp, optimizers
+            global amp
 
     def train(self, trn_data, val_data, model, optimizer, scheduler, evaluator=None):
 
@@ -167,9 +169,13 @@ class Learner(object):
             losses.update(loss.item(), batch_size)
 
             optimizer.zero_grad()
-            with amp.scale_loss(loss, optimizer) as scaled_loss:
-                scaled_loss.backward()
-            # loss.backward()
+
+            if self.config.use_apex:
+                with amp.scale_loss(loss, optimizer) as scaled_loss:
+                    scaled_loss.backward()
+            else:
+                loss.backward()
+
             optimizer.step()
             scheduler.step()
 

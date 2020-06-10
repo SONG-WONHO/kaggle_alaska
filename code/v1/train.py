@@ -17,7 +17,9 @@ from model import get_model
 from learner import Learner
 from utils import *
 
-from apex import amp, optimizers
+USE_APEX = False
+if USE_APEX:
+    from apex import amp, optimizers
 
 warnings.filterwarnings("ignore")
 
@@ -137,6 +139,8 @@ def main():
         {k: v for k, v in dict(CFG.__dict__).items() if '__' not in k},
         open(os.path.join(CFG.log_path, 'CFG.json'), "w"))
 
+    CFG.use_apex = USE_APEX
+
     ### seed all
     seed_everything(CFG.seed)
 
@@ -182,9 +186,10 @@ def main():
          'weight_decay': 0.0}]
     optimizer = optim.AdamW(optimizer_grouped_parameters, CFG.learning_rate)
 
-    model, optimizer = amp.initialize(
-        model, optimizer, verbosity=0
-    )
+    if CFG.use_apex:
+        model, optimizer = amp.initialize(
+            model, optimizer, verbosity=0
+        )
 
     if torch.cuda.device_count() > 1:
         model = nn.DataParallel(model)
