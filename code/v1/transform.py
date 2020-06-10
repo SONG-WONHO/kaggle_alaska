@@ -440,8 +440,7 @@ def transform_v10(config):
     train_transform = Compose([
         VerticalFlip(p=0.5),
         HorizontalFlip(p=0.5),
-        grid_shuffle,
-        grid_dropout,
+        OneOf([grid_shuffle, grid_dropout], p=0.66),
         Normalize(
             mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225],
