@@ -192,7 +192,8 @@ def main():
         )
 
     if torch.cuda.device_count() > 1:
-        model = nn.DataParallel(model)
+        # model = nn.DataParallel(model)
+        model = nn.parallel.DistributedDataParallel(model)
 
     # get scheduler
     # scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1)
