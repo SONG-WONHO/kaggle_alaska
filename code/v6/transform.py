@@ -383,6 +383,82 @@ def transform_v9(config):
     return train_transform, test_transform
 
 
+def transform_v10(config):
+    """ VFlip, Hflip, GridShuffle, GridDropOut, Normalize
+
+    :param config: CFG
+    :return: (train transform, test transform)
+    """
+
+    grid_shuffle = OneOf([
+        RandomGridShuffle(grid=(2, 2)),
+        RandomGridShuffle(grid=(4, 4)),
+        RandomGridShuffle(grid=(8, 8)),
+        RandomGridShuffle(grid=(16, 16)),
+        RandomGridShuffle(grid=(32, 32)),
+        RandomGridShuffle(grid=(64, 64)),
+    ], p=0.5)
+
+    grid_dropout = OneOf([
+        # grid size: (256, 256)
+        GridDropout(holes_number_x=1, holes_number_y=1, shift_x=0, shift_y=0),
+        GridDropout(holes_number_x=1, holes_number_y=1, shift_x=0, shift_y=512),
+        GridDropout(holes_number_x=1, holes_number_y=1, shift_x=512, shift_y=0),
+        GridDropout(holes_number_x=1, holes_number_y=1, shift_x=512, shift_y=512),
+
+        # grid size: (128, 128)
+        GridDropout(holes_number_x=2, holes_number_y=2, shift_x=0, shift_y=0),
+        GridDropout(holes_number_x=2, holes_number_y=2, shift_x=0, shift_y=512),
+        GridDropout(holes_number_x=2, holes_number_y=2, shift_x=512, shift_y=0),
+        GridDropout(holes_number_x=2, holes_number_y=2, shift_x=512, shift_y=512),
+
+        # grid size: (64, 64)
+        GridDropout(holes_number_x=4, holes_number_y=4, shift_x=0, shift_y=0),
+        GridDropout(holes_number_x=4, holes_number_y=4, shift_x=0, shift_y=512),
+        GridDropout(holes_number_x=4, holes_number_y=4, shift_x=512, shift_y=0),
+        GridDropout(holes_number_x=4, holes_number_y=4, shift_x=512, shift_y=512),
+
+        # grid size: (32, 32)
+        GridDropout(holes_number_x=8, holes_number_y=8, shift_x=0, shift_y=0),
+        GridDropout(holes_number_x=8, holes_number_y=8, shift_x=0, shift_y=512),
+        GridDropout(holes_number_x=8, holes_number_y=8, shift_x=512, shift_y=0),
+        GridDropout(holes_number_x=8, holes_number_y=8, shift_x=512, shift_y=512),
+
+        # grid size: (16, 16)
+        GridDropout(holes_number_x=16, holes_number_y=16, shift_x=0, shift_y=0),
+        GridDropout(holes_number_x=16, holes_number_y=16, shift_x=0, shift_y=512),
+        GridDropout(holes_number_x=16, holes_number_y=16, shift_x=512, shift_y=0),
+        GridDropout(holes_number_x=16, holes_number_y=16, shift_x=512, shift_y=512),
+
+        # grid size: (8, 8)
+        GridDropout(holes_number_x=32, holes_number_y=32, shift_x=0, shift_y=0),
+        GridDropout(holes_number_x=32, holes_number_y=32, shift_x=0, shift_y=512),
+        GridDropout(holes_number_x=32, holes_number_y=32, shift_x=512, shift_y=0),
+        GridDropout(holes_number_x=32, holes_number_y=32, shift_x=512, shift_y=512),
+    ], p=0.5)
+
+    train_transform = Compose([
+        VerticalFlip(p=0.5),
+        HorizontalFlip(p=0.5),
+        OneOf([grid_shuffle, grid_dropout], p=0.66),
+        Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+        ToTensor()
+    ], p=1)
+
+    test_transform = Compose([
+        Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+        ToTensor()
+    ], p=1)
+
+    return train_transform, test_transform
+
+
 def get_transform(config):
     try:
         name = f"transform_v{config.transform_version}"
