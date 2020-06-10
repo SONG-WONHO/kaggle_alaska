@@ -348,6 +348,41 @@ def transform_v8(config):
     return train_transform, test_transform
 
 
+def transform_v9(config):
+    """ VFlip, Hflip, GridShuffle, GridDropOut, Normalize
+
+    :param config: CFG
+    :return: (train transform, test transform)
+    """
+
+    train_transform = Compose([
+        VerticalFlip(p=0.5),
+        HorizontalFlip(p=0.5),
+        RandomGridShuffle(grid=(64, 64), p=0.5),
+        OneOf([
+            GridDropout(holes_number_x=32, holes_number_y=32, shift_x=0, shift_y=0),
+            GridDropout(holes_number_x=32, holes_number_y=32, shift_x=0, shift_y=512),
+            GridDropout(holes_number_x=32, holes_number_y=32, shift_x=512, shift_y=0),
+            GridDropout(holes_number_x=32, holes_number_y=32, shift_x=512, shift_y=512),
+        ], p=0.5),
+        Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+        ToTensor()
+    ], p=1)
+
+    test_transform = Compose([
+        Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+        ToTensor()
+    ], p=1)
+
+    return train_transform, test_transform
+
+
 def get_transform(config):
     try:
         name = f"transform_v{config.transform_version}"
