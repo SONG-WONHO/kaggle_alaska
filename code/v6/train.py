@@ -35,10 +35,11 @@ class CFG:
 
     # model
     model_name = "BaseModel"
+    backbone_name = "efficientnet-b3"
 
     # train
     batch_size = 8
-    learning_rate = 1e-3
+    learning_rate = 1e-2
     num_epochs = 40
     train_sample_size = 30
     valid_sample_size = 30
@@ -197,7 +198,7 @@ def main():
     # get scheduler
     # scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode='min', factor=0.5, patience=3, verbose=False,
+        optimizer, mode='min', factor=0.5, patience=5, verbose=False,
         threshold=0.0001, threshold_mode='abs', cooldown=0, min_lr=1e-8, eps=1e-08)
 
     ### Train related logic
