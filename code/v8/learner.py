@@ -75,8 +75,8 @@ class Learner(object):
             vl_loss, vl_loss_bin, vl_metric = self._valid_one_epoch(valid_loader, model)
 
             # logging
-            logger.loc[epoch] = [tr_loss, tr_loss_bin, vl_loss, vl_loss_bin] + vl_metric
-            logger.round(4).to_csv(os.path.join(self.config.log_path, 'log.csv'))
+            logger.loc[epoch] = [tr_loss, tr_loss_bin, vl_loss, vl_loss_bin] + vl_metric + [optimizer.param_groups[0]['lr']]
+            logger.round(5).to_csv(os.path.join(self.config.log_path, 'log.csv'))
 
             # save model
             if best_metric < logger.loc[epoch, 'val_metric']:
@@ -87,6 +87,8 @@ class Learner(object):
                 self.save()
                 self.name = f"model.best"
                 self.save()
+
+            scheduler.step(metrics=vl_loss)
 
         self.logger = logger
 
@@ -179,10 +181,9 @@ class Learner(object):
                 loss.backward()
 
             optimizer.step()
-            scheduler.step()
 
             train_iterator.set_description(
-                f"train ce:{losses.avg:.4f}, lr:{scheduler.get_lr()[0]:.4f}")
+                f"train ce:{losses.avg:.4f}, lr:{optimizer.param_groups[0]['lr']:.6f}")
 
         return losses.avg, 0
 
@@ -229,7 +230,7 @@ class Learner(object):
 
     def _create_logger(self):
         log_cols = ['tr_loss', 'tr_loss_bin', 'val_loss', 'val_loss_bin'] \
-                   + [f"val_metric_{i}" for i in range(16)] + ["val_metric"]
+                   + [f"val_metric_{i}" for i in range(16)] + ["val_metric", 'lr']
         return pd.DataFrame(index=range(self.config.num_epochs), columns=log_cols)
 
     def _cal_metrics(self, pred, true):
