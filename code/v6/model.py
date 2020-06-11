@@ -11,7 +11,7 @@ class GeM(nn.Module):
         self.eps = eps
 
     def forward(self, x):
-        return F.avg_pool2d(x.clamp(min=self.eps).pow(self.p), x.size()[2:]).pow(1./self.p).reshape(-1, 1280)
+        return F.avg_pool2d(x.clamp(min=self.eps).pow(self.p), x.size()[2:]).pow(1./self.p)
 
 
 class BaseModel(nn.Module):
@@ -19,10 +19,16 @@ class BaseModel(nn.Module):
         super().__init__()
         self.config = config
         self.model = EfficientNet.from_pretrained(config.backbone_name)
+        print(self.model)
+
+        self.c = {
+            "efficientnet-b0": 1280,
+            "efficientnet-b3": 1536
+        }[config.backbone_name]
 
         def get_reg_layer():
             return nn.Sequential(
-                nn.Linear(1280, config.num_targets),
+                nn.Linear(self.c, config.num_targets),
             )
 
         self.pool_layer = GeM()
@@ -31,8 +37,8 @@ class BaseModel(nn.Module):
 
     def forward(self, x):
         feat = self.model.extract_features(x)
-        feat = self.pool_layer(feat)
-        # feat = F.avg_pool2d(feat, feat.size()[2:]).reshape(-1, 1280)
+        feat = self.pool_layer(feat).reshape(-1, self.c)
+        # feat = F.avg_pool2d(feat, feat.size()[2:]).reshape(-1, self.c)
         outputs = self.dense_out(feat)
         return outputs
 
