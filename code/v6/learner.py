@@ -167,6 +167,8 @@ class Learner(object):
 
             preds = model(X_batch)
 
+            print(preds.shape, y_batch.shape)
+
             loss = loss_func(preds, y_batch.view(-1))
             losses.update(loss.item(), batch_size)
 
