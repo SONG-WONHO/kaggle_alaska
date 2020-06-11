@@ -35,7 +35,7 @@ class CFG:
 
     # model
     model_name = "BaseModel"
-    backbone_name = "efficientnet-b3"
+    backbone_name = "efficientnet-b0"
 
     # train
     batch_size = 8
