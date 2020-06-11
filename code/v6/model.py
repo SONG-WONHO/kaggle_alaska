@@ -19,7 +19,6 @@ class BaseModel(nn.Module):
         super().__init__()
         self.config = config
         self.model = EfficientNet.from_pretrained(config.backbone_name)
-        print(self.model)
 
         self.c = {
             "efficientnet-b0": 1280,
