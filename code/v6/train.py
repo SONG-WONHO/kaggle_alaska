@@ -84,6 +84,8 @@ def main():
                         help=f"valid sample size ({CFG.valid_sample_size})")
 
     # model
+    parser.add_argument('--backbone-name', default=CFG.backbone_name,
+                        help="backbone name")
 
     # etc
     parser.add_argument("--workers", default=CFG.workers, type=int,
@@ -111,6 +113,7 @@ def main():
     CFG.valid_sample_size = args.valid_sample_size
 
     # model
+    CFG.backbone_name = args.backbone_name
 
     # etc
     CFG.workers = args.workers
