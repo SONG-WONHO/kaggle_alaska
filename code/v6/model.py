@@ -36,8 +36,8 @@ class BaseModel(nn.Module):
 
     def forward(self, x):
         feat = self.model.extract_features(x)
-        feat = self.pool_layer(feat).reshape(-1, self.c)
-        # feat = F.avg_pool2d(feat, feat.size()[2:]).reshape(-1, self.c)
+        # feat = self.pool_layer(feat).reshape(-1, self.c)
+        feat = F.avg_pool2d(feat, feat.size()[2:]).reshape(-1, self.c)
         outputs = self.dense_out(feat)
         return outputs
 
