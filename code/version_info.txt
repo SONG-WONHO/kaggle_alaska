@@ -3,12 +3,12 @@ v1: Transforms - Baseline *
 v2: LabelSmoothing - Bad
 v3: Weighted Loss - Bad
 v4: Edit Model architecture
-    - To Do: LinearPool, GridModel
+    - To Do: *
     - Complete: GeM
-    - Delete: ConvPool
+    - Delete: ConvPool, GridModel, LinearPool
 v5: Delete Batch Norm from Models - Very Bad
 v6: Scheduler - Reduce on plateau *
 v7: Pretrain Model - Bad
-v8: Low Level Features - Good, Variety *
-v9: DCT Features, Based on v4 (GeM) - To Do
-v10: GridMix
+v8: Low Level Features - Good, Variety - Bad
+v9: DCT Features, Based on v6 - To Do
+v10: GridMix - Bad
