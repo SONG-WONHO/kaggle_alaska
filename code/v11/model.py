@@ -32,13 +32,13 @@ class BaseModel(nn.Module):
 
         self.pool_layer = GeM()
 
-        self.dense_out = get_reg_layer()
+        self.dense_out_bin = get_reg_layer()
 
     def forward(self, x):
         feat = self.model.extract_features(x)
         # feat = self.pool_layer(feat).reshape(-1, self.c)
         feat = F.avg_pool2d(feat, feat.size()[2:]).reshape(-1, self.c)
-        outputs = self.dense_out(feat)
+        outputs = self.dense_out_bin(feat)
         return outputs
 
 
