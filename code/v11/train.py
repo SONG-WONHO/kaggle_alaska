@@ -181,6 +181,7 @@ def main():
         model = model.to(CFG.device)
 
     model.dense_out = nn.Linear(1536, 1)
+    model = model.to(CFG.device)
 
     # get optimizer
     param_optimizer = list(model.named_parameters())
