@@ -47,7 +47,7 @@ class CFG:
     # etc
     seed = 42
     workers = 1
-    num_targets = 10
+    num_targets = 1
 
 
 def main():
@@ -179,13 +179,6 @@ def main():
         print(f"Get Model")
         model = get_model(CFG)
         model = model.to(CFG.device)
-
-    model.dense_out = nn.Linear(1536, 1)
-    model = model.to(CFG.device)
-
-    torch.cuda.empty_cache()
-    import gc
-    gc.collect()
 
     # get optimizer
     param_optimizer = list(model.named_parameters())
