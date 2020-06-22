@@ -12,3 +12,4 @@ v7: Pretrain Model - Bad
 v8: Low Level Features - Good, Variety - Bad
 v9: DCT Features, Based on v6 - To Do
 v10: GridMix - Bad
+v11: Binary Model
