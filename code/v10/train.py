@@ -90,7 +90,6 @@ def main():
     parser.add_argument("--seed", default=CFG.seed, type=int,
                         help=f"seed({CFG.seed})")
 
-
     args = parser.parse_args()
 
     # path
