@@ -183,6 +183,10 @@ def main():
     model.dense_out = nn.Linear(1536, 1)
     model = model.to(CFG.device)
 
+    torch.cuda.empty_cache()
+    import gc
+    gc.collect()
+
     # get optimizer
     param_optimizer = list(model.named_parameters())
     no_decay = ['bias', 'BatchNorm.bias', 'BatchNorm.weight', 'LayerNorm.bias', 'LayerNorm.weight']
