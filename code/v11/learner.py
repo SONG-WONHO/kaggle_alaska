@@ -147,7 +147,7 @@ class Learner(object):
                     return v[len('module.'):]
 
             model_state_dict = {strip_module_str(k): v for k, v in model_state_dict.items()}
-            model.load_state_dict(model_state_dict)
+            model.load_state_dict(model_state_dict, strict=False)
             print("Multi GPU (Train)")
 
         self.best_model = model.to(self.config.device)
