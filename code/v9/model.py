@@ -27,17 +27,27 @@ class BaseModel(nn.Module):
 
         def get_reg_layer():
             return nn.Sequential(
-                nn.Linear(self.c, config.num_targets),
+                nn.Linear(self.c + 512, config.num_targets),
             )
 
         self.pool_layer = GeM()
 
         self.dense_out = get_reg_layer()
 
-    def forward(self, x):
+        self.dctr = nn.Sequential(
+            nn.Conv1d(in_channels=3, out_channels=512, kernel_size=1, stride=1),
+            nn.LeakyReLU(),
+            nn.Linear(8000, 1, bias=False)
+        )
+
+    def forward(self, x, dctr):
         feat = self.model.extract_features(x)
-        # feat = self.pool_layer(feat).reshape(-1, self.c)
         feat = F.avg_pool2d(feat, feat.size()[2:]).reshape(-1, self.c)
+
+        feat_dctr = self.dctr(dctr).squeeze(-1)
+
+        feat = torch.cat([feat, feat_dctr], dim=-1)
+
         outputs = self.dense_out(feat)
         return outputs
 

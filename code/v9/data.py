@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 
 import cv2
+import h5py
 
 import torch
 from torch.utils.data import Dataset
@@ -86,11 +87,25 @@ def load_data(config, train_sample_size=5000, valid_sample_size=1000):
     return train_df, valid_df, test_df
 
 
+def load_tabular(df):
+    fns = []
+    for fn in df['ImageFileName']:
+        fn = fn.split("/")
+        fn.insert(2, "DCTR")
+        fn[-1] = fn[-1].replace(".jpg", ".mat")
+        fn = "/".join(fn)
+        fns.append(fn)
+
+    df = pd.DataFrame({"DCTR": fns})
+    return df
+
+
 class Alaska2Dataset(Dataset):
 
-    def __init__(self, config, df, augmentations=None):
+    def __init__(self, config, df, tabular, augmentations=None):
         self.config = config
         self.data = df.values
+        self.tabular = tabular.values
         self.augment = augmentations
 
     def __len__(self):
@@ -104,4 +119,9 @@ class Alaska2Dataset(Dataset):
         if self.augment:
             im = self.augment(image=im)['image']
 
-        return im, qf, label, label_bin
+        dctr, = self.tabular[idx]
+        # load dctr feature
+        dctr = h5py.File(dctr, 'r')
+        dctr = np.transpose(np.array(dctr.get('DCTR_features')), (1, 0))
+
+        return im, qf, label, label_bin, dctr

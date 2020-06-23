@@ -107,11 +107,12 @@ class Learner(object):
 
         test_loader = tqdm(test_loader, leave=False)
 
-        for X_batch, _, _, _ in test_loader:
+        for X_batch, _, _, _, dctr in test_loader:
             X_batch = X_batch.to(self.config.device)
+            dctr = dctr.to(self.config.device)
 
             with torch.no_grad():
-                preds = model(X_batch)
+                preds = model(X_batch, dctr)
 
             preds = preds.cpu().detach()
 
@@ -159,13 +160,14 @@ class Learner(object):
         model.train()
 
         train_iterator = tqdm(train_loader, leave=False)
-        for X_batch, typ, y_batch, y_bin in train_iterator:
+        for X_batch, typ, y_batch, y_bin, dctr in train_iterator:
             X_batch = X_batch.to(self.config.device)
             y_batch = y_batch.to(self.config.device)
+            dctr = dctr.to(self.config.device)
 
             batch_size = X_batch.size(0)
 
-            preds = model(X_batch)
+            preds = model(X_batch, dctr)
 
             loss = loss_func(preds, y_batch.view(-1))
             losses.update(loss.item(), batch_size)
@@ -192,14 +194,15 @@ class Learner(object):
         model.eval()
 
         valid_loader = tqdm(valid_loader, leave=False)
-        for i, (X_batch, typ, y_batch, y_bin) in enumerate(valid_loader):
+        for i, (X_batch, typ, y_batch, y_bin, dctr) in enumerate(valid_loader):
             X_batch = X_batch.to(self.config.device)
             y_batch = y_batch.to(self.config.device)  # .type(torch.float32)
+            dctr = dctr.to(self.config.device)
 
             batch_size = X_batch.size(0)
 
             with torch.no_grad():
-                preds = model(X_batch)
+                preds = model(X_batch, dctr)
                 loss = loss_func(preds, y_batch.view(-1))
                 losses.update(loss.item(), batch_size)
 

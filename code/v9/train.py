@@ -152,6 +152,8 @@ def main():
     # load data
     print("Load Raw Data")
     train_df, valid_df, test_df = load_data(CFG, CFG.train_sample_size, CFG.valid_sample_size)
+    train_tabular = load_tabular(train_df)
+    valid_tabular = load_tabular(valid_df)
 
     # get transform
     print("Get Transform")
@@ -159,8 +161,8 @@ def main():
 
     # dataset
     print("Get Dataset")
-    trn_data = Alaska2Dataset(CFG, train_df, train_transforms)
-    val_data = Alaska2Dataset(CFG, valid_df, test_transforms)
+    trn_data = Alaska2Dataset(CFG, train_df, train_tabular, train_transforms)
+    val_data = Alaska2Dataset(CFG, valid_df, valid_tabular, test_transforms)
 
     ### Model related logic
     # get learner
