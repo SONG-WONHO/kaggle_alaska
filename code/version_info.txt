@@ -12,4 +12,7 @@ v7: Pretrain Model - Bad
 v8: Low Level Features - Good, Variety - Bad
 v9: DCT Features, Based on v6 - To Do
 v10: GridMix - Bad
-v11: Binary Model
+v11: Pretrained + Binary Model - WIP
+v12: SyncBatchNorm, Fold, AdamP, Transformv12 - WIP
+v*: Pretrained + Only QF95 - To Do
+v20: New Architecture
