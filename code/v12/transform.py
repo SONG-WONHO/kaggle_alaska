@@ -522,8 +522,8 @@ def transform_v12(config):
         RandomGridShuffle(grid=(4, 4)),
         RandomGridShuffle(grid=(8, 8)),
         RandomGridShuffle(grid=(16, 16)),
-        RandomGridShuffle(grid=(32, 32)),
-        RandomGridShuffle(grid=(64, 64)),
+        # RandomGridShuffle(grid=(32, 32)),
+        # RandomGridShuffle(grid=(64, 64)),
     ], p=0.5)
 
     grid_dropout = OneOf([
@@ -552,16 +552,20 @@ def transform_v12(config):
         GridDropout(holes_number_x=8, holes_number_y=8, shift_x=512, shift_y=512),
 
         # grid size: (16, 16)
+        """
         GridDropout(holes_number_x=16, holes_number_y=16, shift_x=0, shift_y=0),
         GridDropout(holes_number_x=16, holes_number_y=16, shift_x=0, shift_y=512),
         GridDropout(holes_number_x=16, holes_number_y=16, shift_x=512, shift_y=0),
         GridDropout(holes_number_x=16, holes_number_y=16, shift_x=512, shift_y=512),
+        """
 
         # grid size: (8, 8)
+        """
         GridDropout(holes_number_x=32, holes_number_y=32, shift_x=0, shift_y=0),
         GridDropout(holes_number_x=32, holes_number_y=32, shift_x=0, shift_y=512),
         GridDropout(holes_number_x=32, holes_number_y=32, shift_x=512, shift_y=0),
         GridDropout(holes_number_x=32, holes_number_y=32, shift_x=512, shift_y=512),
+        """
     ], p=0.5)
 
     train_transform = Compose([
