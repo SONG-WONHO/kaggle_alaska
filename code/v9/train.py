@@ -39,8 +39,8 @@ class CFG:
 
     # train
     batch_size = 8
-    learning_rate = 1e-3
-    num_epochs = 80
+    learning_rate = 3e-4
+    num_epochs = 40
     train_sample_size = 30
     valid_sample_size = 30
 
@@ -201,10 +201,10 @@ def main():
         model = nn.DataParallel(model)
 
     # get scheduler
-    # scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode='min', factor=0.5, patience=2, verbose=False,
-        threshold=0.0001, threshold_mode='abs', cooldown=0, min_lr=1e-8, eps=1e-08)
+    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1)
+    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+    #     optimizer, mode='min', factor=0.5, patience=2, verbose=False,
+    #     threshold=0.0001, threshold_mode='abs', cooldown=0, min_lr=1e-8, eps=1e-08)
 
     ### Train related logic
     learner.train(trn_data, val_data, model, optimizer, scheduler)
