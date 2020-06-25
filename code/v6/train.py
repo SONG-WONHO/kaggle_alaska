@@ -17,7 +17,7 @@ from model import get_model
 from learner import Learner
 from utils import *
 
-USE_APEX = True
+USE_APEX = False
 if USE_APEX:
     from apex import amp, optimizers
 
@@ -199,10 +199,10 @@ def main():
         model = nn.DataParallel(model)
 
     # get scheduler
-    # scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode='min', factor=0.5, patience=5, verbose=False,
-        threshold=0.0001, threshold_mode='abs', cooldown=0, min_lr=1e-8, eps=1e-08)
+    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1)
+    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+    #     optimizer, mode='min', factor=0.5, patience=5, verbose=False,
+    #     threshold=0.0001, threshold_mode='abs', cooldown=0, min_lr=1e-8, eps=1e-08)
 
     ### Train related logic
     learner.train(trn_data, val_data, model, optimizer, scheduler)

@@ -88,7 +88,7 @@ class Learner(object):
                 self.name = f"model.best"
                 self.save()
 
-            scheduler.step(metrics=vl_loss)
+            # scheduler.step(metrics=vl_loss)
 
         self.logger = logger
 
