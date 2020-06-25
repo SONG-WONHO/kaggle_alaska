@@ -10,7 +10,7 @@ v5: Delete Batch Norm from Models - Very Bad
 v6: Scheduler - Reduce on plateau *
 v7: Pretrain Model - Bad
 v8: Low Level Features - Good, Variety - Bad
-v9: DCT Features, Based on v6 - To Do
+v9: DCT Features, Based on v6 - WIP
 v10: GridMix - Bad
 v11: Pretrained + Binary Model - WIP
 v12: SyncBatchNorm, Fold, AdamP, Transformv12 - WIP
