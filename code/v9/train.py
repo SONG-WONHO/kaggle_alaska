@@ -93,7 +93,6 @@ def main():
     parser.add_argument("--seed", default=CFG.seed, type=int,
                         help=f"seed({CFG.seed})")
 
-
     args = parser.parse_args()
 
     # path
@@ -154,8 +153,6 @@ def main():
     train_df, valid_df, test_df = load_data(CFG, CFG.train_sample_size, CFG.valid_sample_size)
     train_tabular = load_tabular(train_df)
     valid_tabular = load_tabular(valid_df)
-
-    print(train_tabular.head(3))
 
     # get transform
     print("Get Transform")
