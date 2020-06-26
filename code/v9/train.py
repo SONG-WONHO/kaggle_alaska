@@ -156,7 +156,6 @@ def main():
     valid_tabular = load_tabular(valid_df)
 
     print(train_tabular.head(3))
-    return
 
     # get transform
     print("Get Transform")
@@ -166,6 +165,9 @@ def main():
     print("Get Dataset")
     trn_data = Alaska2Dataset(CFG, train_df, train_tabular, train_transforms)
     val_data = Alaska2Dataset(CFG, valid_df, valid_tabular, test_transforms)
+
+    print(trn_data[0][1:])
+    return
 
     ### Model related logic
     # get learner
