@@ -155,6 +155,9 @@ def main():
     train_tabular = load_tabular(train_df)
     valid_tabular = load_tabular(valid_df)
 
+    print(train_tabular.head(3))
+    return
+
     # get transform
     print("Get Transform")
     train_transforms, test_transforms = get_transform(CFG)
