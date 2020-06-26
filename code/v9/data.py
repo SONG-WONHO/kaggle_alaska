@@ -96,7 +96,15 @@ def load_tabular(df):
         fn = "/".join(fn)
         fns.append(fn)
 
-    df = pd.DataFrame({"DCTR": fns})
+    fns_gfr = []
+    for fn in df['ImageFileName']:
+        fn = fn.split("/")
+        fn[-1] = fn[-1].replace(".jpg", ".mat")
+        fn = "/".join(fn[-2:])
+        fn = os.path.join("/data/GFR/", fn)
+        fns_gfr.append(fn)
+
+    df = pd.DataFrame({"DCTR": fns, "GFR": fns_gfr})
     return df
 
 
