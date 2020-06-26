@@ -136,6 +136,5 @@ class Alaska2Dataset(Dataset):
 
         # load gfr feature
         gfr = io.loadmat(gfr)['feat']
-        print(gfr.shape)
 
         return im, qf, label, label_bin, dctr, gfr
