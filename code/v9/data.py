@@ -4,6 +4,7 @@ import numpy as np
 
 import cv2
 import h5py
+from scipy import io
 
 import torch
 from torch.utils.data import Dataset
@@ -127,9 +128,14 @@ class Alaska2Dataset(Dataset):
         if self.augment:
             im = self.augment(image=im)['image']
 
-        dctr, = self.tabular[idx]
+        dctr, gfr = self.tabular[idx]
+
         # load dctr feature
         dctr = h5py.File(dctr, 'r')
         dctr = np.transpose(np.array(dctr.get('DCTR_features')), (1, 0))
 
-        return im, qf, label, label_bin, dctr
+        # load gfr feature
+        gfr = io.loadmat(gfr)['feat']
+        print(gfr.shape)
+
+        return im, qf, label, label_bin, dctr, gfr
