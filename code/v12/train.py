@@ -193,8 +193,8 @@ def main():
          'weight_decay': 0.001},
         {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)],
          'weight_decay': 0.0}]
-    # optimizer = optim.AdamW(optimizer_grouped_parameters, CFG.learning_rate)
-    optimizer = AdamP(optimizer_grouped_parameters, CFG.learning_rate)
+    optimizer = optim.AdamW(optimizer_grouped_parameters, CFG.learning_rate)
+    # optimizer = AdamP(optimizer_grouped_parameters, CFG.learning_rate)
 
     if CFG.use_apex:
         model, optimizer = amp.initialize(
