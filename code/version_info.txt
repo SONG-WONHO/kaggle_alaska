@@ -15,5 +15,8 @@ v10: GridMix - Bad
 v11: Pretrained + Binary Model - WIP
 v12: SyncBatchNorm, Fold, AdamP, Transformv12 - WIP
 v13: SyncBatchNorm
+v14: Regression
+v15: Freeze backbone and finetune model
+
 v*: Pretrained + Only QF95 - To Do
 v20: New Architecture
