@@ -188,6 +188,8 @@ def main():
             for param in child.parameters():
                 param.requires_grad = False
 
+        model.dense_out[0].reset_parameters()
+
     # get optimizer
     optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=CFG.learning_rate, amsgrad=True)
 
